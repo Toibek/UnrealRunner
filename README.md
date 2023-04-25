@@ -1,6 +1,8 @@
 # Unreal Runner
 
-> ## Fucked up on the git, it all got removed, i'll get back to this point tomorrow, soz
+Had some issues on the day for the Part 1 of the assignment, 
+I accidentally lost all the files i had that got it working and managed to build the day after, 
+sorry about the delay.
 
 An enless runner made in unreal using primarily c++ to make stuff function for an assignment for a course in FutureGames Programming.
 
