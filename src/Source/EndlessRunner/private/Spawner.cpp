@@ -3,6 +3,7 @@
 
 #include "Spawner.h"
 
+ASpawner* ASpawner::Instance = nullptr;
 // Sets default values
 ASpawner::ASpawner()
 {
@@ -10,12 +11,21 @@ ASpawner::ASpawner()
 	PrimaryActorTick.bCanEverTick = true;
 
 }
+void ASpawner::PreInitializeComponents()
+{
+	// Perform initialization tasks here
 
+	Instance = this;
+	UE_LOG(LogTemp, Log, TEXT("Instance has been set"));
+
+	Super::PreInitializeComponents();
+
+
+}
 // Called when the game starts or when spawned
 void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -36,7 +46,22 @@ void ASpawner::Tick(float DeltaTime)
 		SpawnTimer = 0.0f;
 	}
 }
-
+ASpawner* ASpawner::GetInstance()
+{
+	if (!Instance)
+	{
+		Instance = NewObject<ASpawner>();
+	}
+	return Instance;
+}
+int ASpawner::GetSlots()
+{
+	return GridSlots;
+}
+float ASpawner::GetDistance()
+{
+	return GridDistance;
+}
 void ASpawner::SpawnActor()
 {
 	// Spawn the desired actor at the spawner's location and rotation

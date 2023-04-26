@@ -2,6 +2,9 @@
 
 
 #include "Dodger.h"
+#include "Spawner.h"
+
+
 
 // Sets default values
 ADodger::ADodger()
@@ -15,6 +18,15 @@ ADodger::ADodger()
 void ADodger::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ASpawner* Spawner = ASpawner::GetInstance();
+	if (Spawner)
+	{
+		GridSlots = Spawner->GetSlots();
+		GridDistance = Spawner->GetDistance();
+	}
+	else
+		UE_LOG(LogTemp, Log, TEXT("Kringe, spawner not found"));
 
 }
 

@@ -22,11 +22,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	UPROPERTY(EditAnywhere, Category = "World")
-		int GridSlots = 1;
 
-	UPROPERTY(EditAnywhere, Category = "World")
-		float GridDistance = 2;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -35,4 +31,7 @@ private:
 	void MoveRL(float Value);
 	int Position = 0;
 	bool Moved = false;
+
+	int GridSlots = 1;
+	float GridDistance = 2;
 };

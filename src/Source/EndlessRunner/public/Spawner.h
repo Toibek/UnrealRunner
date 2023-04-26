@@ -14,6 +14,12 @@ class ENDLESSRUNNER_API ASpawner : public AActor
 public:
 	// Sets default values for this actor's properties
 	ASpawner();
+	UFUNCTION()
+		static  ASpawner* GetInstance();
+	UFUNCTION()
+		float GetDistance();
+	UFUNCTION()
+		int GetSlots();
 
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 		TSubclassOf<class AActor> ActorToSpawn;
@@ -29,9 +35,12 @@ public:
 
 
 protected:
-	float SpawnTimer; // Added SpawnTimer as a protected member variable
+	virtual void PreInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	static ASpawner* Instance;
+	float SpawnTimer; // Added SpawnTimer as a protected member variable
 	void SpawnActor();
 
 };
