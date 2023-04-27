@@ -19,7 +19,7 @@ void ADodger::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ASpawner* Spawner = ASpawner::GetInstance();
+	Spawner = ASpawner::GetInstance();
 	if (Spawner)
 	{
 		GridSlots = Spawner->GetSlots();
@@ -48,12 +48,14 @@ void ADodger::MoveRL(float Value)
 	FString ValueStr = FString::SanitizeFloat(Value);
 	if (!Moved && Value != 0)
 	{
+		startingPos = GetActorLocation();
 		Position += Value;
 		if (Position < -GridSlots) Position = -GridSlots;
 		else if (Position > GridSlots) Position = GridSlots;
-		SetActorLocation(FVector(0, GridDistance * Position, 100));
 
-		UE_LOG(LogTemp, Log, TEXT("MoveRL: %s"), *ValueStr);
+		SetActorLocation(FVector(startingPos.X, GridDistance * Position, startingPos.Z));
+		Spawner->ReportPosition(Position);
+
 		Moved = true;
 	}
 	else if (Value == 0)

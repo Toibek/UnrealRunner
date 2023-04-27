@@ -1,9 +1,11 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Spawner.h"
 #include "Dodger.generated.h"
 
 UCLASS()
@@ -31,7 +33,8 @@ private:
 	void MoveRL(float Value);
 	int Position = 0;
 	bool Moved = false;
-
+	ASpawner* Spawner;
 	int GridSlots = 1;
 	float GridDistance = 2;
+	FVector startingPos;
 };

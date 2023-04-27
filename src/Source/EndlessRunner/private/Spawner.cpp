@@ -26,25 +26,40 @@ void ASpawner::PreInitializeComponents()
 void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
+	SpawnActor();
 }
 
 // Called every frame
 void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	PlayTime += DeltaTime;
+	SpawnRate = SpawnRateCurve.GetRichCurveConst()->Eval(PlayTime);
+	Speed = SpeedCurve.GetRichCurveConst()->Eval(PlayTime);
 
 
-	// Implement the spawning logic based on SpawnRate, if desired
-	// For example, you can use a timer to spawn actors at a specific rate
-	// or trigger the spawning logic based on certain conditions
-
-	// Spawn actors at the specified SpawnRate
 	SpawnTimer += DeltaTime;
-	if (SpawnTimer >= SpawnRate)
+	if (SpawnTimer >= 1 / SpawnRate)
 	{
 		SpawnActor();
 		SpawnTimer = 0.0f;
 	}
+	FVector speed(-Speed * DeltaTime, 0, 0);
+	int Length = MovingObjects.Num();
+	for (int i = Length - 1; i >= 0; i--)
+	{
+		AActor* actor = MovingObjects[i];
+		FVector aPos = actor->GetActorLocation();
+		if (aPos.X < -TravelDistance)
+		{
+			MovingObjects.Remove(actor);
+			actor->SetActorLocation(FVector(SpawnDistance, aPos.Y, SpawnHeight));
+			IdleObjects.Add(actor);
+		}
+		else
+			actor->SetActorLocation(aPos + speed);
+	}
+
 }
 ASpawner* ASpawner::GetInstance()
 {
@@ -53,6 +68,10 @@ ASpawner* ASpawner::GetInstance()
 		Instance = NewObject<ASpawner>();
 	}
 	return Instance;
+}
+void ASpawner::ReportPosition(int val)
+{
+	LastPosition = val;
 }
 int ASpawner::GetSlots()
 {
@@ -64,11 +83,26 @@ float ASpawner::GetDistance()
 }
 void ASpawner::SpawnActor()
 {
-	// Spawn the desired actor at the spawner's location and rotation
-	FActorSpawnParameters SpawnParams;
-	int rand = FMath::RandRange(-GridSlots, GridSlots);
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = GetInstigator();
-	GetWorld()->SpawnActor<AActor>(ActorToSpawn, GetActorLocation() + FVector(0, rand * GridDistance, 0), GetActorRotation(), SpawnParams);
+	int Length = IdleObjects.Num();
+
+	int rand = FMath::RandRange(LastPosition - 1, LastPosition + 1);
+	if (rand < -GridSlots) rand = -GridSlots;
+	else if (rand > GridSlots) rand = GridSlots;
+
+	if (Length > 0)
+	{
+		AActor* actor = IdleObjects[0];
+		actor->SetActorLocation(GetActorLocation() + FVector(SpawnDistance, rand * GridDistance, SpawnHeight));
+		IdleObjects.Remove(actor);
+		MovingObjects.Add(actor);
+	}
+	else
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+		AActor* spawned = GetWorld()->SpawnActor<AActor>(ActorToSpawn, GetActorLocation() + FVector(SpawnDistance, rand * GridDistance, SpawnHeight), GetActorRotation(), SpawnParams);
+		MovingObjects.Add(spawned);
+	}
 }
 

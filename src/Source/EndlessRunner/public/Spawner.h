@@ -20,18 +20,35 @@ public:
 		float GetDistance();
 	UFUNCTION()
 		int GetSlots();
+	UFUNCTION()
+		void ReportPosition(int val);
 
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 		TSubclassOf<class AActor> ActorToSpawn;
-
 	UPROPERTY(EditAnywhere, Category = "Spawner")
-		float SpawnRate = 1;
+		float SpawnHeight;
 
 	UPROPERTY(EditAnywhere, Category = "World")
 		int GridSlots = 1;
-
 	UPROPERTY(EditAnywhere, Category = "World")
 		float GridDistance = 2;
+
+	UPROPERTY(EditAnywhere, Category = "World")
+		float SpawnDistance = 3500;
+	UPROPERTY(EditAnywhere, Category = "World")
+		float TravelDistance = 1000;
+
+	UPROPERTY(VisibleAnywhere, Category = "Difficulty")
+		float PlayTime;
+	UPROPERTY(VisibleAnywhere, Category = "Difficulty")
+		float SpawnRate = 1;
+	UPROPERTY(EditAnywhere, Category = "Difficulty")
+		FRuntimeFloatCurve SpawnRateCurve;
+	UPROPERTY(VisibleAnywhere, Category = "Difficulty")
+		float Speed = 10;
+	UPROPERTY(EditAnywhere, Category = "Difficulty")
+		FRuntimeFloatCurve SpeedCurve;
+
 
 
 protected:
@@ -40,7 +57,9 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	static ASpawner* Instance;
+	int LastPosition;
 	float SpawnTimer; // Added SpawnTimer as a protected member variable
 	void SpawnActor();
-
+	TArray<AActor*> MovingObjects;
+	TArray<AActor*> IdleObjects;
 };
