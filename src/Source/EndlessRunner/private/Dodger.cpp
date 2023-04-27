@@ -24,6 +24,7 @@ void ADodger::BeginPlay()
 	{
 		GridSlots = Spawner->GetSlots();
 		GridDistance = Spawner->GetDistance();
+		Spawner->ReportAlive();
 	}
 	else
 		UE_LOG(LogTemp, Log, TEXT("Kringe, spawner not found"));
@@ -61,6 +62,24 @@ void ADodger::MoveRL(float Value)
 	else if (Value == 0)
 	{
 		Moved = false;
+	}
+}
+void ADodger::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	// Check if the other actor is a valid actor
+	if (OtherActor && OtherActor != this)
+	{
+		Lives--;
+		if (Lives < 0)
+		{
+			Spawner->ReportDeath();
+			Destroy();
+		}
+		else
+		{
+			Spawner->ReportHit(OtherActor);
+			UE_LOG(LogTemp, Warning, TEXT("Collision Begin! %d Lives left!"), Lives);
+		}
 	}
 }
 

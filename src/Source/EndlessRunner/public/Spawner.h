@@ -21,7 +21,23 @@ public:
 	UFUNCTION()
 		int GetSlots();
 	UFUNCTION()
+		void ReportAlive();
+	UFUNCTION()
+		void ReportNearMiss();
+	UFUNCTION()
 		void ReportPosition(int val);
+	UFUNCTION()
+		void ReportHit(AActor* hitter);
+	UFUNCTION()
+		void ReportDeath();
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Score")
+		float Score;
+	UPROPERTY(EditAnywhere, Category = "Score")
+		float TimeMultiplier;
+	UPROPERTY(EditAnywhere, Category = "Score")
+		float NearMissScore;
 
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 		TSubclassOf<class AActor> ActorToSpawn;
@@ -56,10 +72,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	bool GameActive = false;
+	int ActivePlayers = 0;
+
 	static ASpawner* Instance;
-	int LastPosition;
-	float SpawnTimer; // Added SpawnTimer as a protected member variable
+	int LastPosition = 0;
+	float SpawnTimer = 0;
 	void SpawnActor();
+	void RemoveActor(AActor* actor);
 	TArray<AActor*> MovingObjects;
 	TArray<AActor*> IdleObjects;
 };

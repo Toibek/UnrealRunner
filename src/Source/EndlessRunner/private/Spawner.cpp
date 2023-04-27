@@ -4,6 +4,8 @@
 #include "Spawner.h"
 
 ASpawner* ASpawner::Instance = nullptr;
+int ActivePlayers = 0;
+bool GameActive = true;
 // Sets default values
 ASpawner::ASpawner()
 {
@@ -27,22 +29,26 @@ void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnActor();
+	GameActive = true;
 }
 
 // Called every frame
 void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	PlayTime += DeltaTime;
-	SpawnRate = SpawnRateCurve.GetRichCurveConst()->Eval(PlayTime);
-	Speed = SpeedCurve.GetRichCurveConst()->Eval(PlayTime);
-
-
-	SpawnTimer += DeltaTime;
-	if (SpawnTimer >= 1 / SpawnRate)
+	if (GameActive)
 	{
-		SpawnActor();
-		SpawnTimer = 0.0f;
+		PlayTime += DeltaTime;
+		SpawnRate = SpawnRateCurve.GetRichCurveConst()->Eval(PlayTime);
+		Speed = SpeedCurve.GetRichCurveConst()->Eval(PlayTime);
+		Score += TimeMultiplier * DeltaTime;
+
+		SpawnTimer += DeltaTime;
+		if (SpawnTimer >= 1 / SpawnRate)
+		{
+			SpawnActor();
+			SpawnTimer = 0.0f;
+		}
 	}
 	FVector speed(-Speed * DeltaTime, 0, 0);
 	int Length = MovingObjects.Num();
@@ -52,9 +58,7 @@ void ASpawner::Tick(float DeltaTime)
 		FVector aPos = actor->GetActorLocation();
 		if (aPos.X < -TravelDistance)
 		{
-			MovingObjects.Remove(actor);
-			actor->SetActorLocation(FVector(SpawnDistance, aPos.Y, SpawnHeight));
-			IdleObjects.Add(actor);
+			RemoveActor(actor);
 		}
 		else
 			actor->SetActorLocation(aPos + speed);
@@ -69,6 +73,22 @@ ASpawner* ASpawner::GetInstance()
 	}
 	return Instance;
 }
+void ASpawner::ReportAlive()
+{
+	ActivePlayers++;
+}
+void ASpawner::ReportHit(AActor* actor)
+{
+	//Do something cool where the actor was
+	RemoveActor(actor);
+}
+void ASpawner::ReportDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("HaHa, You died!"));
+	ActivePlayers--;
+	if (ActivePlayers == 0)
+		GameActive = false;
+}
 void ASpawner::ReportPosition(int val)
 {
 	LastPosition = val;
@@ -81,28 +101,41 @@ float ASpawner::GetDistance()
 {
 	return GridDistance;
 }
+void ASpawner::ReportNearMiss()
+{
+	Score += NearMissScore;
+}
 void ASpawner::SpawnActor()
 {
-	int Length = IdleObjects.Num();
-
 	int rand = FMath::RandRange(LastPosition - 1, LastPosition + 1);
 	if (rand < -GridSlots) rand = -GridSlots;
 	else if (rand > GridSlots) rand = GridSlots;
-
+	AActor* actor;
+	int Length = IdleObjects.Num();
 	if (Length > 0)
 	{
-		AActor* actor = IdleObjects[0];
+		actor = IdleObjects[0];
 		actor->SetActorLocation(GetActorLocation() + FVector(SpawnDistance, rand * GridDistance, SpawnHeight));
 		IdleObjects.Remove(actor);
-		MovingObjects.Add(actor);
 	}
 	else
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
-		AActor* spawned = GetWorld()->SpawnActor<AActor>(ActorToSpawn, GetActorLocation() + FVector(SpawnDistance, rand * GridDistance, SpawnHeight), GetActorRotation(), SpawnParams);
-		MovingObjects.Add(spawned);
+		actor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, GetActorLocation() + FVector(SpawnDistance, rand * GridDistance, SpawnHeight), GetActorRotation(), SpawnParams);
 	}
+	MovingObjects.Add(actor);
+}
+void ASpawner::RemoveActor(AActor* actor)
+{
+	if (MovingObjects.Find(actor) != -1)
+	{
+		MovingObjects.Remove(actor);
+		actor->SetActorLocation(FVector(SpawnDistance, 0, SpawnHeight));
+		IdleObjects.Add(actor);
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Trying to remove actor that does not exist!"));
 }
 
