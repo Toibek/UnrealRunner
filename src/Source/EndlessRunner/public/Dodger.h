@@ -19,6 +19,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		int Lives = 3;
+	UPROPERTY(EditAnywhere)
+		float NearMissDistance;
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,6 +33,8 @@ public:
 
 private:
 	void MoveRL(float Value);
+	bool CheckNearMiss();
+
 	int Position = 0;
 	bool Moved = false;
 	ASpawner* Spawner;

@@ -103,7 +103,13 @@ float ASpawner::GetDistance()
 }
 void ASpawner::ReportNearMiss()
 {
+	UE_LOG(LogTemp, Log, TEXT("Near Miss! %f Points!"), NearMissScore);
 	Score += NearMissScore;
+
+	int Length = MovingObjects.Num();
+	int rand = FMath::RandRange(Length - 2, Length-1);
+	RemoveActor(MovingObjects[rand]);
+
 }
 void ASpawner::SpawnActor()
 {
