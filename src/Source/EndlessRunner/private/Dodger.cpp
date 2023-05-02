@@ -9,8 +9,7 @@
 // Sets default values
 ADodger::ADodger()
 {
-	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
@@ -31,18 +30,6 @@ void ADodger::BeginPlay()
 
 }
 
-// Called every frame
-void ADodger::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void ADodger::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis(TEXT("MoveRL"), this, &ADodger::MoveRL);
-}
 
 void ADodger::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -62,25 +49,15 @@ void ADodger::NotifyActorBeginOverlap(AActor* OtherActor)
 }
 void ADodger::MoveRL(float Value)
 {
-	FString ValueStr = FString::SanitizeFloat(Value);
-	if (!Moved && Value != 0)
-	{
-		startingPos = GetActorLocation();
-		Position += Value;
-		if (Position < -GridSlots) Position = -GridSlots;
-		else if (Position > GridSlots) Position = GridSlots;
+	startingPos = GetActorLocation();
+	Position += Value;
+	if (Position < -GridSlots) Position = -GridSlots;
+	else if (Position > GridSlots) Position = GridSlots;
 
-		if (CheckNearMiss()) Spawner->ReportNearMiss();
+	if (CheckNearMiss()) Spawner->ReportNearMiss();
 
-		SetActorLocation(FVector(startingPos.X, GridDistance * Position, startingPos.Z));
-		Spawner->ReportPosition(Position);
-
-		Moved = true;
-	}
-	else if (Value == 0)
-	{
-		Moved = false;
-	}
+	SetActorLocation(FVector(startingPos.X, GridDistance * Position, startingPos.Z));
+	Spawner->ReportPosition(Position);
 }
 bool ADodger::CheckNearMiss()
 {
@@ -95,6 +72,13 @@ bool ADodger::CheckNearMiss()
 	ECollisionChannel CollisionChannel = ECC_Visibility;
 	FCollisionQueryParams TraceParams(TEXT("Raycast"), true, this);
 	FHitResult HitResult;
-	return World->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, CollisionChannel, TraceParams);
+	World->LineTraceSingleByChannel(HitResult, RayStart, RayEnd, CollisionChannel, TraceParams);
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor)
+	{
+		FString ActorName = HitActor->GetName();
+		return(!ActorName.Contains(FString(TEXT("ADodgerBot"))));
+	}
+	return false;
 }
 

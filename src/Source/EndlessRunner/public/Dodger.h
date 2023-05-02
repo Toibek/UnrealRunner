@@ -20,23 +20,19 @@ public:
 	UPROPERTY(EditAnywhere)
 		int Lives = 3;
 	UPROPERTY(EditAnywhere)
-		float NearMissDistance;
+		float NearMissDistance = 150;
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
-
-	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyActorBeginOverlap(AActor* other) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void MoveRL(float Value);
 
 private:
-	void MoveRL(float Value);
 	bool CheckNearMiss();
 
 	int Position = 0;
-	bool Moved = false;
 	ASpawner* Spawner;
 	int GridSlots = 1;
 	float GridDistance = 2;

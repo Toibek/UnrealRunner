@@ -4,7 +4,6 @@
 #include "Spawner.h"
 
 ASpawner* ASpawner::Instance = nullptr;
-int ActivePlayers = 0;
 bool GameActive = true;
 // Sets default values
 ASpawner::ASpawner()
@@ -63,7 +62,6 @@ void ASpawner::Tick(float DeltaTime)
 		else
 			actor->SetActorLocation(aPos + speed);
 	}
-
 }
 ASpawner* ASpawner::GetInstance()
 {
@@ -107,7 +105,12 @@ void ASpawner::ReportNearMiss()
 	Score += NearMissScore;
 
 	int Length = MovingObjects.Num();
-	int rand = FMath::RandRange(Length - 2, Length-1);
+	if (Length == 0) return;
+
+	int rand = FMath::RandRange(Length - 2, Length - 1);
+	if (rand < 0) rand = 0;
+	if (rand >= Length) rand = Length-1;
+
 	RemoveActor(MovingObjects[rand]);
 
 }
