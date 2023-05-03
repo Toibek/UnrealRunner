@@ -99,6 +99,10 @@ float ASpawner::GetDistance()
 {
 	return GridDistance;
 }
+float ASpawner::GetScore()
+{
+	return Score;
+}
 void ASpawner::ReportNearMiss()
 {
 	UE_LOG(LogTemp, Log, TEXT("Near Miss! %f Points!"), NearMissScore);
@@ -109,7 +113,7 @@ void ASpawner::ReportNearMiss()
 
 	int rand = FMath::RandRange(Length - 2, Length - 1);
 	if (rand < 0) rand = 0;
-	if (rand >= Length) rand = Length-1;
+	if (rand >= Length) rand = Length - 1;
 
 	RemoveActor(MovingObjects[rand]);
 

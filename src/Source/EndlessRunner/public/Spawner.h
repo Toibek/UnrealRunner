@@ -31,7 +31,6 @@ public:
 	UFUNCTION()
 		void ReportDeath();
 
-
 	UPROPERTY(VisibleAnywhere, Category = "Score")
 		float Score;
 	UPROPERTY(EditAnywhere, Category = "Score")
@@ -64,6 +63,7 @@ public:
 		float Speed = 10;
 	UPROPERTY(EditAnywhere, Category = "Difficulty")
 		FRuntimeFloatCurve SpeedCurve;
+	float GetScore();
 
 
 
