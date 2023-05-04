@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Score")
 		FLinearColor Color;
 	UPROPERTY(EditAnywhere, Category = "Score")
-		float Scale;
+		UFont* Font;
 	UPROPERTY(EditAnywhere, Category = "Score")
-		bool bScalePosition;
+		float Scale;
 };

@@ -31,6 +31,9 @@ public:
 	UFUNCTION()
 		void ReportDeath();
 
+	UFUNCTION(BlueprintNativeEvent)
+		void GameEnd();
+
 	UPROPERTY(VisibleAnywhere, Category = "Score")
 		float Score;
 	UPROPERTY(EditAnywhere, Category = "Score")
@@ -82,4 +85,5 @@ protected:
 	void RemoveActor(AActor* actor);
 	TArray<AActor*> MovingObjects;
 	TArray<AActor*> IdleObjects;
+	TArray<float> HighScores;
 };

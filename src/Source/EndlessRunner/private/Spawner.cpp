@@ -2,6 +2,7 @@
 
 
 #include "Spawner.h"
+#include "Misc/FileHelper.h"
 
 ASpawner* ASpawner::Instance = nullptr;
 bool GameActive = true;
@@ -85,7 +86,15 @@ void ASpawner::ReportDeath()
 	UE_LOG(LogTemp, Warning, TEXT("HaHa, You died!"));
 	ActivePlayers--;
 	if (ActivePlayers == 0)
+	{
 		GameActive = false;
+		GameEnd();
+	}
+}
+
+void ASpawner::GameEnd_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Doing some work here"));
 }
 void ASpawner::ReportPosition(int val)
 {
@@ -151,4 +160,5 @@ void ASpawner::RemoveActor(AActor* actor)
 	else
 		UE_LOG(LogTemp, Warning, TEXT("Trying to remove actor that does not exist!"));
 }
+
 

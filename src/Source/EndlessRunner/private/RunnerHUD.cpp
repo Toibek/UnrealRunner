@@ -12,5 +12,5 @@ void ARunnerHUD::DrawHUD()
 {
 	float score = Spawner->GetScore();
 	FString text = FString::Printf(TEXT("%.0f"), score);
-	DrawText(text, Color, screenX, screenY);
+	DrawText(text, Color, screenX, screenY, Font,Scale);
 }
